@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mdadm_hdd=$(blkid | grep omv-nas:0  | grep -oP '\/dev\/sd[a-z]')
+mdadm_hdd=$(/sbin/blkid | grep omv-nas:0  | grep -oP '\/dev\/sd[a-z]')
 
 #echo "$mdadm_hdd"
 
