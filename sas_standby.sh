@@ -4,13 +4,18 @@ mdadm_hdd=$(/sbin/blkid | grep omv-nas:0  | grep -oP '\/dev\/sd[a-z]')
 
 #echo "$mdadm_hdd"
 
-standby='enable'
-bms='enable'
+standby=''
+bms=''
 help='false'
 
 set_standby () { standby=$1; }
 set_bms () { bms=$1; }
 helpmenu () { help='true'; }
+
+if [[ $# == 0 ]]; then
+	helpmenu
+fi
+
 
 while [ ! $# -eq 0 ]
 do
@@ -26,17 +31,25 @@ do
         --help | -h)
 		helpmenu
 		;;
+	*)
+		echo "Unknown Parameter"
+		helpmenu
+		;;
 	esac
 	shift
 done
 
 if [[ $help == 'true' ]]; then
-
-        echo "--standby, -s {enable,disable}: Enables or disables the standby functionality. "
-        echo "--bms, -b {enable,disable}    : Enables or disables BMS"
-        echo "--help, -h                    : Displays this help"
-	echo "If no parameters are provided -s enable -b enable are used"
-        exit 0
+	echo ""
+	echo "USAGE"
+	echo "sas_standby.sh PARAMETERS"
+	echo ""
+	echo "PARAMETERS"
+        echo "--standby, -s {enable,disable}    : Enables or disables the standby functionality. "
+        echo "--bms,     -b {enable,disable}    : Enables or disables BMS"
+        echo "--help,    -h                     : Displays this help"
+	echo ""
+	exit 0
 fi
 
 
