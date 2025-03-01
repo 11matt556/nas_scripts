@@ -1,10 +1,17 @@
 for drive in `lsblk --nodeps -n -o name`; do
-  result=$(/usr/sbin/smartctl -i /dev/$drive | grep Serial)
-  sas=$(/usr/sbin/smartctl -a /dev/$drive | grep --count "SAS")
+  #sas=$(/usr/sbin/smartctl -a /dev/$drive | grep --count "SAS")
   issas="no"
 
-  if [ $sas = 1 ]; then
+  if [ $(/usr/sbin/smartctl -a /dev/$drive | grep --count "SAS") = 1 ]; then
+    tmp=$(/usr/sbin/smartctl -i /dev/$drive | grep Serial)
+    result=${tmp/#"Serial number:        "}
     issas="yes"
-  echo "/dev/$drive SAS: $issas $result"
+  else
+    result="$(lsblk --nodeps -no serial /dev/$drive)"
+    issas="no "
+  fi
 
-  fi done
+  size=$(lsblk --nodeps -no size /dev/$drive)
+
+  echo "/dev/$drive SAS: $issas Serial: $result Size: $size"
+done
