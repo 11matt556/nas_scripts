@@ -67,7 +67,7 @@ for drive in $mdadm_hdd; do
 
         if [[ $standby == 'enable' ]]; then
 		echo "Enable standby on $drive"
-                sdparm --flexible -6 -l --save --set SCT=3000 $drive
+                sdparm --flexible -6 -l --save --set SCT=18000 $drive # sct is in 100ms
 		sdparm --flexible -6 -l --save --set STANDBY=1 $drive
         fi
 
