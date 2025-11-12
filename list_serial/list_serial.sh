@@ -41,6 +41,6 @@ print_var=""
   #printvar+=$($result)
 #done
 
-echo -e $results
+#echo -e $results
 
 (echo -e "DRIVE SAS SIZE HCTL RAID SERIAL\n"; echo -e $results) | column -t
