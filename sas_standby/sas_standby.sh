@@ -4,13 +4,18 @@ mdadm_hdd=$(/sbin/blkid | grep omv-nas  | grep -oP '\/dev\/sd[a-z]')
 
 #echo "$mdadm_hdd"
 
+standby_minutes=5
+sct=$(($standby_minutes*60*10))
+
 standby=''
 bms=''
 help='false'
 
+
 set_standby () { standby=$1; }
 set_bms () { bms=$1; }
 helpmenu () { help='true'; }
+
 
 if [[ $# == 0 ]]; then
 	helpmenu
@@ -38,6 +43,11 @@ do
 	esac
 	shift
 done
+echo ""
+echo "-----------Idle Value------------"
+echo "Idle (Minutes): $standby_minutes "
+echo "Calculated SCT = $sct            "
+echo "---------------------------------"
 
 if [[ $help == 'true' ]]; then
 	echo ""
@@ -51,7 +61,6 @@ if [[ $help == 'true' ]]; then
 	echo ""
 	exit 0
 fi
-
 
 for drive in $mdadm_hdd; do
 
@@ -67,7 +76,7 @@ for drive in $mdadm_hdd; do
 
         if [[ $standby == 'enable' ]]; then
 		echo "Enable standby on $drive"
-                sdparm --flexible -6 -l --save --set SCT=18000 $drive # sct is in 100ms
+                sdparm --flexible -6 -l --save --set SCT=$sct $drive # sct is in 100ms
 		sdparm --flexible -6 -l --save --set STANDBY=1 $drive
         fi
 
