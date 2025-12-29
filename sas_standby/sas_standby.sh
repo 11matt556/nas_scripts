@@ -10,10 +10,12 @@ sct=$(($standby_minutes*60*10))
 standby=''
 bms=''
 help='false'
+timeout=-1
 
 
 set_standby () { standby=$1; }
 set_bms () { bms=$1; }
+set_timeout () { timeout=$1; }
 helpmenu () { help='true'; }
 
 
@@ -33,6 +35,10 @@ do
 		shift
 		set_bms $1
 		;;
+	--timeout | -t)
+		shift
+		set_timeout $1
+		;;
         --help | -h)
 		helpmenu
 		;;
@@ -43,11 +49,14 @@ do
 	esac
 	shift
 done
-echo ""
-echo "-----------Idle Value------------"
-echo "Idle (Minutes): $standby_minutes "
-echo "Calculated SCT = $sct            "
-echo "---------------------------------"
+
+if [[ $standby == 'enable' ]]; then
+	echo ""
+	echo "-----------Standby Parameters------------"
+	echo "Idle (Minutes): $standby_minutes"
+	echo "Calculated SCT = $sct"
+	echo "-----------------------------------------"
+fi
 
 if [[ $help == 'true' ]]; then
 	echo ""
@@ -57,6 +66,7 @@ if [[ $help == 'true' ]]; then
 	echo "PARAMETERS"
         echo "--standby, -s {enable,disable}    : Enables or disables the standby functionality. "
         echo "--bms,     -b {enable,disable}    : Enables or disables BMS"
+        echo "--timeout, -t {value}             : Sets kernel IO timeout (seconds)"
         echo "--help,    -h                     : Displays this help"
 	echo ""
 	exit 0
@@ -85,4 +95,8 @@ for drive in $mdadm_hdd; do
         	sdparm --flexible -6 -l --save --set STANDBY=0 $drive
         fi
 
+	if [[ $timeout != -1 ]]; then
+		echo "Set timeout on $drive to $timeout seconds"
+		echo $timeout > $drive
+	fi
 done
